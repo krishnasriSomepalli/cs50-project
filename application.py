@@ -28,7 +28,9 @@ def index():
 
 @app.route("/data")
 def data():
-    with open('./static/butterfly.json') as json_data:
+    with open('./files/cactus.json') as json_data:
         d = json.load(json_data)
-        print(d)
-    return jsonify(d)
+        data = []
+        for i in range(0, 100):
+            data.append(d[i])
+    return jsonify(data)

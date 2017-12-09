@@ -10,7 +10,7 @@ function getData(){
 			var i, j;
 			var temp1 = data;
 			for (i in temp1){
-				var temp2 = temp1[i]["drawing"];
+				var temp2 = temp1[i];
 				var drawOne = [];
 				for (j in temp2){
 					var temp3 = temp2[j][0];
