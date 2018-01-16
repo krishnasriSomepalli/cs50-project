@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {{ JSGlue.include() }}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>~Doodler~</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link href='https://fonts.googleapis.com/css?family=Bubbler One' rel='stylesheet'>
+        <style>
+            body{
+                font-family: 'Bubbler One';
+                background-color: black;
+                background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url("http://www.supercoloring.com/sites/default/files/styles/coloring_full/public/cif/2015/12/doodle-collab-coloring-page.png");
+                background-size: auto;
+            }
+            #theme{
+                width: 50%;
+                padding-left: 2%;
+            }
+        </style>
+    </head>
+    <body onload="arrange()" onresize="arrange()">
+        <div class="container">
+            <div class="row" style="padding-top: 5%; padding-bottom: 5%;">
+                <div class="col-xs-9 col-sm-9">
+                    <form onsubmit="go(event)">
+                        <input id="theme" type="text" placeholder="Theme" value="" required />
+                        <input type="submit" value="Go" style="margin-left: 2%;" />
+                    </form>
+                </div>
+                <div class="col-xs-3 col-sm-3"></div>
+            </div>
+            <div class="row" style="overflow: hidden;">
+                <div class="col-md-9" id="wrapper" style="padding-right: 5%;">
+                    <svg id="canvas" style="background-color: white;" width="100%" height="450px" viewBox="0 0 3600 600" preserveAspectRatio="xMinYMin meet"></svg>
+                </div>
+                <div class="col-md-3" id="buttons" style="background-color: #c0ff00; height: 450px;">
+                    <button class="button" onclick="load()">Load Another</button>
+                    <button class="button" onclick="">Customize</button>
+                    <button class="button" onclick="">Download</button>
+                </div>
+            </div>
+        </div>
+        <script src="../static/script.js"></script>
+        <script>
+            var old = true; // true if the keyword has not changed
+            var prev = ""; // the previous keyword
+            function arrange(){
+                if ($(window).width() < 768) {
+                    $('.button').attr('style','display: inline-block;');
+                }
+                else{
+                    $('.button').attr('style','display: block;');
+                }
+            }
+            function load(){
+                old = false;
+                run();
+            }
+            function go(e){
+                e.preventDefault();
+                if(prev != "")
+                    if(prev != document.getElementById('theme').value)
+                    {
+                        old = false;
+                        prev = document.getElementById('theme').value;
+                    }
+                else
+                    prev = document.getElementById('theme').value;
+                run();
+            }
+        </script>
+    </body>
+</html>
+
+

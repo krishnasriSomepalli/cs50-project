@@ -2,12 +2,14 @@ function getData(){
 
 	return new Promise(function(resolve, reject){
 		var data;
-		$.getJSON(Flask.url_for("data"))
+		var parameters = {
+			category: document.getElementById('theme').value
+		};
+		$.getJSON(Flask.url_for("data"), parameters)
 		.done(function(json){
 			data = json;
-
 			var drawAll = [];
-			var i, j;
+			var i, j, k;
 			var temp1 = data;
 			for (i in temp1){
 				var temp2 = temp1[i];
@@ -15,20 +17,14 @@ function getData(){
 				for (j in temp2){
 					var temp3 = temp2[j][0];
 					var temp4 = temp2[j][1];
-					var points = "";
-					for (k in temp3){
-						if(k == 0)
-						{
-							points = points + "M" + temp3[k] + ",";
-							points = points + temp4[k] + " ";
-							points = points + "C" + temp3[k] + ",";
-							points = points + temp4[k] + " ";
-						}
-						else
-						{
-							points = points + temp3[k] + ",";
-							points = points + temp4[k] + " ";
-						}
+					var len = temp3.length;
+					var points = [];
+					for(k = 0; k < len; k++)
+					{
+						var point = [];
+						point.push(temp3[k]);
+						point.push(temp4[k]);
+						points.push(point);
 					}
 					drawOne.push(points);
 				}
@@ -42,36 +38,51 @@ function getData(){
 
 function draw(drawAll){
 	var width = 4000;
-	var height = 4000;
-	var spacing = 256;
-	var x = -256;
+	var height = 2000;
+	var spacing = 300;
+	var initial = -280;
+	var x = initial;
+	var temp = initial;
 	var y = 0;
-	var butterflies = d3.select("#canvas");
-
-	butterflies.selectAll('g')
+	var id = 0;
+	var elements = d3.select("#canvas");
+	$('.element').remove();
+	var element = elements.selectAll("svg .element")
 		.data(drawAll)
 		.enter()
-		.append('g')
-			.attr("class", "butterfly")
-			.attr("transform", function(d){
+		.append("svg")
+			.attr("class", "element")
+			.attr("id", function(){
+				return id++;
+			})
+			.attr("x", function(){
 				if(x + spacing > width)
+					x = initial;
+				x = x + spacing;
+				return x;
+			})
+			.attr("y", function(){
+				if(temp + spacing > width)
 				{
-					x = 0;
+					temp = initial;
 					y = y + spacing;
 				}
-				x = x + spacing;
-				return "translate(" + x + "," + y + ")";
-			})
-		.selectAll('path')
+				temp = temp + spacing;
+				return y;
+			});
+
+	element.selectAll("path")
 		.data(function(d){
 			return d;
 		})
 		.enter()
-		.append('path')
-		.attr("d", function(d) {
-			return d;
-		})
-		.attr("style", "fill: none; stroke: black; stroke-width: 1;");
+		.append("path")
+	    .attr("d", function(d){
+	    	var lineGenerator = d3.line().curve(d3.curveCatmullRom.alpha(1));
+	    	var pathData = lineGenerator(d);
+	        return pathData;
+	    })
+	    .attr("style", "stroke-width: 2; stroke-linecap: round; fill: none; stroke: black;");
 
 	return new Promise(function(resolve, reject){
 		resolve(drawAll);
@@ -87,6 +98,52 @@ function runner(){
 		});
 }
 
-runner().catch(function(msg){
-	console.log(msg);
-});
+function run(){
+	return runner().catch(function(msg){
+		console.log(msg);
+	});
+}
+
+function typeAhead(){
+	$('#theme').typeahead({
+		highlight: false,
+		hint: false,
+		minlength: 1
+	},
+	{
+		display: function(suggestion){
+			return suggestion.name;
+		},
+		source: suggest,
+		templates: {
+			suggestion: Handlebars.compile(
+				"<div style='background-color: #ffffff; width: 100%;'>"+
+				"{{name}}"+
+				"</div>"
+			)
+		}
+	});
+
+	$('#theme').focus();
+
+	// getting called multiple times
+	$('#theme').on("typeahead:selected", function(eventObject, suggestion, name) {
+		console.log(suggestion.name);
+        go();
+        $('#theme').blur();
+    });
+}
+
+function suggest(query, syncResults, asyncResults){
+	var parameters = {
+        q: query
+    };
+    $.getJSON(Flask.url_for("suggest"), parameters)
+    .done(function(data, textStatus, jqXHR) {
+        asyncResults(data);
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        console.log(errorThrown.toString());
+        asyncResults([]);
+    });
+}
