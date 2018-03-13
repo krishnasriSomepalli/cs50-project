@@ -33,9 +33,9 @@ def index():
 def basic():
     return render_template("basic.html")
 
-@app.route("/customize")
+@app.route("/doodle")
 def doodle():
-    return render_template("customize.html")
+    return render_template("doodle.html")
 
 @app.route("/data")
 def data():
@@ -44,7 +44,7 @@ def data():
     with open('./files/json/' + category + '.json') as json_data:
         d = json.load(json_data)
         data = []
-        for i in range(0, 1200):
+        for i in range(0, 200):
             data.append(d[randint(0, len(d)-1)])
     return jsonify(data)
 

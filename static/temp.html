@@ -30,7 +30,7 @@
                 <div class="col-xs-9 col-sm-9">
                     <form onsubmit="return false;">
                         <div class="form-group">
-                            <input id="theme" class="form-control typeahead" type="text" placeholder="Theme" required />
+                            <input id="theme" class="form-control typeahead" type="text" placeholder="Theme" oninput="typeAhead()" required />
                         </div>
                     </form>
                 </div>
@@ -49,6 +49,8 @@
         </div>
         <script src="../static/basicScript.js"></script>
         <script>
+            var prev = ""; // the previous keyword
+
             function arrange(){
                 if ($(window).width() < 768) {
                     $('.button').attr('style','display: inline-block;');
@@ -58,8 +60,24 @@
                 }
             }
             function go(){
-                if(document.getElementById('theme').value !== "")
+                console.log("*");
+                if(prev != "")
+                {
+                    if(prev != document.getElementById('theme').value)
+                    {
+                        prev = document.getElementById('theme').value;
+                        run();
+                    }
+                    else
+                    {
+                        run();
+                    }
+                }
+                else
+                {
+                    prev = document.getElementById('theme').value;
                     run();
+                }
             }
         </script>
     </body>

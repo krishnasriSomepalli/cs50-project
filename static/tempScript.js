@@ -11,6 +11,7 @@ function getData(){
 			var drawAll = [];
 			var i, j, k;
 			var temp1 = data;
+			localStorage.setItem("data", JSON.stringify(json));
 			for (i in temp1){
 				var temp2 = temp1[i];
 				var drawOne = [];
@@ -46,6 +47,7 @@ function draw(drawAll){
 	var y = 0;
 	var id = 0;
 	var elements = d3.select("#canvas");
+
 	$('.element').remove();
 	var element = elements.selectAll("svg .element")
 		.data(drawAll)
@@ -83,16 +85,13 @@ function draw(drawAll){
 	        return pathData;
 	    })
 	    .attr("style", "stroke-width: 2; stroke-linecap: round; fill: none; stroke: black;");
-
-	return new Promise(function(resolve, reject){
-		resolve(drawAll);
-		reject("Error in drawing JSON");
-	});
 }
 
 function runner(){
 	return getData()
-		.then(draw)
+		.then(function(drawAll){
+			draw(drawAll);
+		})
 		.catch(function(msg){
 			console.log(msg);
 		});
@@ -111,9 +110,7 @@ function typeAhead(){
 		minlength: 1
 	},
 	{
-		input: '#theme',
 		display: function(suggestion){
-			console.log(suggestion.name);
 			return suggestion.name;
 		},
 		source: suggest,
@@ -128,9 +125,10 @@ function typeAhead(){
 
 	$('#theme').focus();
 
-	// getting called the same number of times as the number of characters the user enters
+	// getting called multiple times, but resolved error...check through the console log
 	$('#theme').on("typeahead:selected", function(eventObject, suggestion, name) {
 		console.log(suggestion.name);
+		document.getElementById('theme').value = suggestion.name;
         go();
         $('#theme').blur();
     });
@@ -148,4 +146,13 @@ function suggest(query, syncResults, asyncResults){
         console.log(errorThrown.toString());
         asyncResults([]);
     });
+}
+
+function downloader(){
+	var svgData = document.getElementById('canvas').outerHTML;
+	var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+	var svgUrl = URL.createObjectURL(svgBlob);
+	var btn = document.getElementById('downloader');
+	btn.href = svgUrl;
+	btn.download = 'doodle.svg';
 }
