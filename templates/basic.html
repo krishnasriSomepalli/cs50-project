@@ -19,15 +19,31 @@
                 background-size: auto;
             }
             #theme{
-                width: 50%;
-                padding-left: 2%;
+                padding-left: 12px;
+                width: 775px;
+                font-size: 16px;
+            }
+            a.item:link, a.item:visited {
+                width: 190px;
+                color: white;
+                padding: 10px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                border: 2px solid white;
+                border-radius: 6px;
+                font-weight: 700;
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+            a.item:hover, a.item:active {
             }
         </style>
     </head>
-    <body onload="arrange()" onresize="arrange()">
+    <body>
         <div class="container">
             <div class="row" style="padding-top: 5%; padding-bottom: 5%;">
-                <div class="col-xs-9 col-sm-9">
+                <div class="col-xs-9 col-sm-9" style=" display:flex; justify-contents:center; align-items:center;">
                     <form onsubmit="return false;">
                         <div class="form-group">
                             <input id="theme" class="form-control typeahead" type="text" placeholder="Theme" required />
@@ -37,30 +53,22 @@
                 <div class="col-xs-3 col-sm-3"></div>
             </div>
             <div class="row" style="overflow: hidden;">
-                <div class="col-md-9" id="wrapper" style="padding-right: 5%;">
-                    <svg id="canvas" style="background-color: white;" width="100%" height="450px" viewBox="0 0 3600 600" preserveAspectRatio="xMinYMin meet"></svg>
+                <div class="col-md-9" id="wrapper" style="padding-right:5%; display:flex; justify-content:center; align-items:center; position:relative;">
+                    <svg id="canvas" style="background-color: white;" width="775px" height="450px" viewBox="0 0 3600 600" preserveAspectRatio="xMinYMin meet" xmlns="http://www.w3.org/2000/svg"></svg>
+                    <img id="loading" src="http://thinkfuture.com/wp-content/uploads/2013/10/loading_spinner.gif" style="display:none; z-index:1000; height:40px; position:absolute; top:205px; left:367px;"/>
                 </div>
-                <div class="col-md-3" id="buttons" style="background-color: #c0ff00; height: 450px;">
-                    <button class="button" onclick="go()">Load Another</button>
-                    <a class="button" href="/customize">Customize</a>
-                    <a class="button" id="downloader" onclick="downloader()">Download</a>
+                <div class="col-md-3" id="buttons" style="background-color:#ffc107; height:450px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                    <div style="height:94%; width:98%; margin:4px; border:1px solid white; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <a class="item" onclick="go()" href="#"><span class="glyphicon glyphicon-repeat" style="margin-right:8px;"></span>Load Another</a>
+                        <a class="item" href="#" onclick="customize()"><span class="glyphicon glyphicon-pencil" style="margin-right:8px;"></span>Customize</a>
+                        <a class="item" onclick="downloader()" href="#"><span class="glyphicon glyphicon-download-alt" style="margin-right:8px;"></span>Download</a>
+                        <a id="downloader" style="display:none;" href=""></a>
+                        <a class="item" href="/multiple"><span class="glyphicon glyphicon-th" style="margin-right:8px;"></span>Choose Multiple Categories</a>
+                        <a class="item" onclick="randomize()" href="#"><span class="glyphicon glyphicon-random" style="margin-right:8px;"></span>Randomize</a>
+                    </div>
                 </div>
             </div>
         </div>
         <script src="../static/basicScript.js"></script>
-        <script>
-            function arrange(){
-                if ($(window).width() < 768) {
-                    $('.button').attr('style','display: inline-block;');
-                }
-                else{
-                    $('.button').attr('style','display: block;');
-                }
-            }
-            function go(){
-                if(document.getElementById('theme').value !== "")
-                    run();
-            }
-        </script>
     </body>
 </html>

@@ -6,6 +6,8 @@ from flask_jsglue import JSGlue
 from random import *
 from nltk.corpus import wordnet as wn
 from nltk.tokenize import word_tokenize
+# from random import shuffle
+from math import ceil
 
 from cs50 import SQL
 
@@ -37,15 +39,43 @@ def basic():
 def doodle():
     return render_template("customize.html")
 
+@app.route("/multiple")
+def multiple():
+    return render_template("multiple.html")
+
 @app.route("/data")
 def data():
-    category = request.args.get('category')
-    print(category)
-    with open('./files/json/' + category + '.json') as json_data:
-        d = json.load(json_data)
-        data = []
-        for i in range(0, 1200):
-            data.append(d[randint(0, len(d)-1)])
+    category = request.args.get('categories')
+    return theme(json.loads(category))
+
+@app.route("/categories")
+def categories():
+    all_categories = []
+    file = open("categories.txt", "r")
+    data = file.read();
+    i = 0;
+    j = 0;
+    category = ""
+    while i<len(data):
+        if(data[i] == '\n'):
+            all_categories.append(category)
+            category = ""
+            j = j+1
+        else:
+            category += data[i]
+        i = i+1
+    file.close()
+    return jsonify(all_categories);
+
+def theme(categories):
+    category_size = ceil(1200/len(categories))
+    data = []
+    for category in categories:
+        with open('./files/json/' + category + '.json') as json_data:
+            d = json.load(json_data)
+            for j in range(0, category_size):
+                data.append(d[randint(0, len(d)-1)])
+    shuffle(data)
     return jsonify(data)
 
 @app.route("/suggest")
@@ -83,7 +113,3 @@ def suggest():
     #     suggestions.extend(suggests)
 
     return jsonify(suggestions)
-
-@app.route("/test")
-def test():
-    return render_template("test.html")

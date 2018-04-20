@@ -1,9 +1,30 @@
-function getData(){
+$(document).ready(function() {
+	if(localStorage.getItem("previous") == "index" || localStorage.getItem("previous") == "customize" || localStorage.getItem("previous") == "basic")
+		localStorage.removeItem("categories");
+	localStorage.setItem("previous", "basic");
+    go();
+})
+
+function go() {
+    if(localStorage.getItem("categories")!=null && localStorage.getItem("categories")!="")
+    	run();
+    else if(document.getElementById('theme').value !== "")
+        run();
+}
+
+function getData() {
 
 	return new Promise(function(resolve, reject){
 		var data;
+		var categories = [];
+		if(localStorage.getItem("categories")!=null && localStorage.getItem("categories")!="")
+			categories = JSON.parse(localStorage.getItem("categories"));
+		else {
+			categories.push(document.getElementById("theme").value);
+			localStorage.setItem("categories", JSON.stringify(categories));
+		}
 		var parameters = {
-			category: document.getElementById('theme').value
+			categories: JSON.stringify(categories)
 		};
 		$.getJSON(Flask.url_for("data"), parameters)
 		.done(function(json){
@@ -38,6 +59,7 @@ function getData(){
 }
 
 function draw(drawAll){
+	document.getElementById("loading").style.display = "none";
 	var width = 4000;
 	var height = 2000;
 	var spacing = 300;
@@ -98,6 +120,7 @@ function runner(){
 }
 
 function run(){
+	document.getElementById("loading").style.display = "block";
 	return runner().catch(function(msg){
 		console.log(msg);
 	});
@@ -119,11 +142,34 @@ function suggest(query, syncResults, asyncResults){
 
 function downloader(){
 	var svgData = document.getElementById('canvas').outerHTML;					// outerHTML gives the required element and all its children
+	svgData = '<?xml version="1.0" encoding="utf-8" standalone="yes"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + svgData;
 	var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
 	var svgUrl = URL.createObjectURL(svgBlob);									// this method creates a new URL for the resource passed in the argument and its lifetime is tied to the documet in the window on which it was created
 	var btn = document.getElementById('downloader');
 	btn.href = svgUrl;															// href holds the URL from where the resource should be downloaded
-	btn.download = document.getElementById('theme').value + '.svg';				// downloads the content at the URL given by svgUrl with the rvalue as the new filename
+
+	var categories = JSON.parse(localStorage.getItem("categories"));
+	var name = categories[0];
+	for(i=1; i<categories.length; i++)
+		name = name+"_"+categories[i];
+	name = name+".svg";
+	btn.download = name;				// downloads the content at the URL given by svgUrl with the rvalue as the new filename
+	btn.click();
+}
+
+function customize() {
+	if(document.getElementById("canvas").children.length > 0)
+		window.open("/customize", "_self");
+	else
+		window.open("#", "_self");
+}
+
+function randomize() {
+	var fileNo = Math.floor(Math.random()*5) + 1;
+	var category = [];
+	category.push("random"+fileNo);
+	localStorage.setItem("categories", JSON.stringify(category));
+	go();
 }
 
 $('#theme').typeahead({
@@ -138,7 +184,7 @@ $('#theme').typeahead({
 	source: suggest,
 	templates: {
 		suggestion: Handlebars.compile(
-			"<div style='background-color: #ffffff; width: 100%;'>"+
+			"<div style='background-color: #fff; width: 775px; padding-left:12px; padding-top:4px; padding-bottom:4px; border-bottom:1px solid #ddd; font-size:16px;'>"+
 			"{{name}}"+
 			"</div>"
 		)
@@ -146,6 +192,7 @@ $('#theme').typeahead({
 });
 
 $('#theme').on("typeahead:selected", function(eventObject, suggestion, name) {
+	localStorage.removeItem("categories");
     go();
     $('#theme').blur();
 });

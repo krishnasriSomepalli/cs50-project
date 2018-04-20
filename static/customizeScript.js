@@ -1,3 +1,10 @@
+$(document).ready(function() {
+	if(localStorage.getItem("previous") == "index" || localStorage.getItem("previous") == "multiple")
+		localStorage.removeItem("categories");
+	localStorage.setItem("previous", "customize");
+})
+
+
 var drawAll = [];
 var id = 0;
 var width = 10000;
@@ -16,15 +23,6 @@ $('html').click(function(event) {
     if(selected == false)
 		showBox(event.target.parentNode.getAttribute('id'));
 });
-
-function arrange(){
-    if ($(window).width() < 768) {
-        $('.button').attr('style','display: inline-block;');
-    }
-    else{
-        $('.button').attr('style','display: block;');
-    }
-}
 
 function getData(){
 	return new Promise(function(resolve, reject){
@@ -56,7 +54,8 @@ function getData(){
 }
 
 function draw(spacing = 300){
-	spacing = parseInt(spacing); // WTFFFF!!! [weird behaviour :o]
+	document.getElementById("loading").style.display = "none";
+	spacing = parseInt(spacing);
 	var height = 2000;
 	var initial = -280;
 	var x = initial;
@@ -90,9 +89,6 @@ function draw(spacing = 300){
 				return y;
 			})
 			.call(d3.drag()
-				.filter(function(){
-					return move;
-				})
 		        .on("start", function(d){
 		        		d3.select(this).raise();
 		        })
@@ -102,7 +98,7 @@ function draw(spacing = 300){
 					    .attr("y", d.y = d3.event.y);
 		        })
 		        .on("end", function(d){
-				}));
+	}));
 
 	element.selectAll("path")
 		.data(function(d){
@@ -130,7 +126,7 @@ function draw(spacing = 300){
 	    	var pathData = lineGenerator(d);
 	        return pathData;
 	    })
-	    .attr("style", "stroke-width: 70; stroke-linecap: round; fill: #D0D0D0; stroke: #D0D0D0; opacity: 0;");
+	    .attr("style", "stroke-width: 80; stroke-linecap: round; fill: #D0D0D0; stroke: #D0D0D0; opacity:0;");
 
 	d3.selectAll(".element")
 		.append("rect")
@@ -146,6 +142,7 @@ function draw(spacing = 300){
 }
 
 function run(){
+	document.getElementById("loading").style.display = "block";
 	return getData()
 		.then(function(drawAll){
 			draw(drawAll);
@@ -163,7 +160,6 @@ function changeSpacing(event){
 function sizing(event){
 	var size = event.target.value;
 	document.getElementById('canvas').setAttribute("viewBox", "0 0 " + size + " 600");
-	// width = size; // Shouldn't width be changed too?? But to what? [solved as of now]
 }
 
 function showBox(id){
@@ -171,9 +167,8 @@ function showBox(id){
 	{
 		var svg = document.getElementById(id);
 		var svgbox = svg.lastElementChild;
-		// border is not visible on all sides for all elements
-		d3.selectAll('.box').attr("style", "stroke-width:3; stroke:rgb(255,255,255); fill:rgb(255,255,255); fill-opacity:0;");
-		svgbox.setAttribute("style", "stroke-width:3; stroke:rgb(220,220,220); fill:rgb(220,220,220); fill-opacity: 0.2;");
+		d3.selectAll('.box').attr("style", "stroke-width:0; stroke:rgb(255,255,255); fill:rgb(255,255,255); fill-opacity:0;");
+		svgbox.setAttribute("style", "stroke-width:0; stroke:rgb(255,255,255); fill:rgb(220,220,220); fill-opacity:0.4; ");
 		$('#copy').css("visibility", "visible");
 		$('#delete').css("visibility", "visible");
 		$('#loadanother').css("visibility", "visible");
@@ -181,7 +176,8 @@ function showBox(id){
 	}
 	else
 	{
-		d3.selectAll('.box').attr("style", "stroke-width:3; stroke:rgb(255,255,255); fill:rgb(255,255,255); fill-opacity:0;");
+		d3.selectAll('.box').attr("style", "stroke-width:0; stroke:rgb(255,255,255); fill:rgb(255,255,255); fill-opacity:0;");
+		//hide or better to disable?
 		$('#copy').css("visibility", "hidden");
 		$('#delete').css("visibility", "hidden");
 		$('#loadanother').css("visibility", "hidden");
@@ -203,7 +199,7 @@ function copyElement(){
 function deleteElement(){
 	$(selection).remove();
 	selected = false;
-	selection = null;
+	showBox(selection.getAttribute("id"));
 }
 
 function loadElement(){
@@ -223,11 +219,17 @@ function loadElement(){
 }
 
 function downloader(){
-	console.log("*");
 	var svgData = document.getElementById('canvas').outerHTML;					// outerHTML gives the required element and all its children
+	svgData = '<?xml version="1.0" encoding="utf-8" standalone="yes"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + svgData;
 	var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
-	var svgUrl = URL.createObjectURL(svgBlob);									// this method creates a new URL for the resource passed in the argument and its lifetime is tied to the documet in the window on which it was created
+	var svgUrl = URL.createObjectURL(svgBlob);									// this method creates a new URL for the resource passed in the argument and its lifetime is tied to the document in the window on which it was created
 	var btn = document.getElementById('downloader');
 	btn.href = svgUrl;															// href holds the URL from where the resource should be downloaded
-	btn.download = document.getElementById('theme').value + '.svg';				// downloads the content at the URL given by svgUrl with the rvalue as the new filename
+	var categories = JSON.parse(localStorage.getItem("categories"));
+	var name = categories[0];
+	for(i=1; i<categories.length; i++)
+		name = name+"_"+categories[i];
+	name = name+".svg";
+	btn.download = name;				// downloads the content at the URL given by svgUrl with the rvalue as the new filename
+	btn.click();
 }

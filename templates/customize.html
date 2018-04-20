@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <!--{{ JSGlue.include() }}-->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>~Doodler~</title>
@@ -16,47 +15,46 @@
                 background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url("http://www.supercoloring.com/sites/default/files/styles/coloring_full/public/cif/2015/12/doodle-collab-coloring-page.png");
                 background-size: auto;
             }
-            #move{
-                border: 1px solid black;
+            a.item:link, a.item:visited {
+                width: 190px;
+                color: white;
+                padding: 10px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                border: 2px solid white;
+                border-radius: 6px;
+                font-weight: 700;
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+            a.item:hover, a.item:active {
             }
         </style>
     </head>
-    <body onload="arrange(); run();" onresize="arrange()">
+    <body onload="run();">
         <div class="container">
             <div class="row" style="overflow: hidden; padding-top: 100px;">
-                <div class="col-md-9" id="wrapper" style="padding-right: 5%;">
-                    <svg id="canvas" style="background-color: white;" width="100%" height="450px" viewBox="0 0 3600 600" preserveAspectRatio="xMinYMin meet">
+                <div class="col-md-9" id="wrapper" style="padding-right: 5%; display:flex; justify-content:center; align-items:center; position:relative;">
+                    <svg id="canvas" style="background-color: white;" width="775px" height="450px" viewBox="0 0 3600 600" preserveAspectRatio="xMinYMin meet" xmlns="http://www.w3.org/2000/svg">
                     </svg>
+                    <img id="loading" src="http://thinkfuture.com/wp-content/uploads/2013/10/loading_spinner.gif" style="display:block; z-index:1000; height:40px; position:absolute; top:205px; left:367px;"/>
                 </div>
-                <div class="col-md-3" id="buttons" style="background-color: #c0ff00; height: 450px;">
-                    <button class="button" id="move" onclick="toggleMove()">Move Elements</button> <br/>
-                    <label for="spacing">Spacing</label>
-                    <input id="spacing" type="range" min="200" max="800" value="300" onchange="changeSpacing(event)"/>
-                    <label for="sizing">Overall sizing</label>
-                    <input id="sizing" type="range" style="direction:rtl;" min="2000" max="7000" value="3600" onchange="sizing(event)"/>
-                    <button class="button">Size Individually</button>
-                    <input class="buttonInd" type="button" value="Copy Element" onclick="copyElement()" id="copy" style="visibility: hidden;" />
-                    <input class="buttonInd" type="button" value="Delete Element"  onclick="deleteElement()" id="delete" style="visibility: hidden;" />
-                    <input class="buttonInd" type="button" value="Load Another Element"  onclick="loadElement()" id="loadanother" style="visibility: hidden;" />
-                    <button class="button" onclick="downloader()">Download</button>
+                <div class="col-md-3" id="buttons" style="background-color:#ffc107; height:450px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                    <div style="height:94%; width:98%; margin:4px; border:1px solid white; padding-top:10px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <label for="spacing" style="color:white; font-size:13px; width:100%; padding-left:7%;">Spacing</label>
+                        <input id="spacing" style="width:86%;" onchange="changeSpacing(event)" type="range" min="200" max="800" value="300"/> <br/>
+                        <label for="sizing" style="color:white; font-size:13px; width:100%; padding-left:7%;">Overall sizing</label>
+                        <input id="sizing" style="direction:rtl; width:86%;" onchange="sizing(event)" type="range" min="2000" max="7000" value="3600"> <br/>
+                        <a class="item" href="#" onclick="downloader()"><span class="glyphicon glyphicon-download-alt" style="margin-right:8px;"></span>Download</a>
+                        <a id="downloader" style="display:none;" href=""></a>
+                        <a class="item" href="#" id="copy" style="visibility:hidden;" onclick="copyElement()"><span class="glyphicon glyphicon-duplicate" style="margin-right:8px;"></span>Copy Element</a>
+                        <a class="item" href="#" id="delete" style="visibility:hidden;" onclick="deleteElement()"><span class="glyphicon glyphicon-trash" style="margin-right:8px;"></span>Delete Element</a>
+                        <a class="item" href="#" id="loadanother" style="visibility:hidden;" onclick="loadElement()"><span class="glyphicon glyphicon-repeat" style="margin-right:8px;"></span>Load Another Element</a>
+                    </div>
                 </div>
             </div>
         </div>
         <script src="../static/customizeScript.js"></script>
-        <script>
-            var move = 0;
-            function toggleMove(){
-                if(move == 0)
-                {
-                    move = 1;
-                    $('#move').css("border", "1px solid red");
-                }
-                else
-                {
-                    move = 0;
-                    $('#move').css("border", "1px solid black");
-                }
-            }
-        </script>
     </body>
 </html>

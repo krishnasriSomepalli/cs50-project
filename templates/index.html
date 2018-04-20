@@ -43,7 +43,7 @@
             }
             #button{
                 background-color: transparent;
-                border: 2px solid #c0ff00;
+                border: 2px solid #ffc107;
                 border-radius: 10px;
                 color: #eeeeee;
                 width: 80px;
@@ -57,7 +57,7 @@
                 font-weight: 500;
             }
             #text h1{
-                color: #c0ff00;
+                color: #ffc107;
             }
         </style>
     </head>
@@ -67,9 +67,8 @@
                 <div id="bgColumn" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <img id="bgImage" alt="background" src="http://www.supercoloring.com/sites/default/files/styles/coloring_full/public/cif/2015/12/doodle-collab-coloring-page.png" onload="fade()"/>
                     <div id="text">
-                        <h1>LOREM IPSUM</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. </p>
-                        <br/>
+                        <h1>~DOODLER~</h1>
+                        <p>Generate doodles using Google's Quick, Draw! dataset.</p>
                         <br/>
                         <a id="button" href="/basic">Go!</a>
                     </div>
@@ -77,6 +76,7 @@
             </div>
         </div>
         <script>
+            localStorage.setItem("previous", "index");
             function fade(){
                 $('#bgImage').css('opacity','0.2');
                 $('#text').css('opacity', '0.9');
