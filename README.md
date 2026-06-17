@@ -1,4 +1,4 @@
-# ~Doodler~
+# \~Doodler\~
 
 > Final project for [CS50x](https://cs50.harvard.edu/x/) (HarvardX / edX).
 
